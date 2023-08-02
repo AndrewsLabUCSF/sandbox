@@ -1,0 +1,32 @@
+# Read configuration file
+configfile: "config/config.yaml"
+
+# Define the rule that determines the final targets of the workflow
+rule all:
+    input:
+        config["final_output_file"]
+
+# Rule to create a file
+rule create_file:
+    output:
+        config["output_file"]
+    conda: "envs/create_file.yaml"
+    threads: 1
+    resources:
+        mem_mb=config["memory"], 
+        walltime=1
+    shell:
+        "echo 'This is a test file.' > {output}"
+
+# Rule to append text to the created file
+rule append_text:
+    input: rules.create_file.output
+    output:
+        config["final_output_file"]
+    conda: "envs/create_file.yaml"
+    threads: 1
+    resources:
+        mem_mb=config["memory"],
+        walltime=1
+    shell:
+        "cat {input} > {output}; echo 'Appended text.' >> {output}"

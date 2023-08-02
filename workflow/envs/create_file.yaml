@@ -1,0 +1,6 @@
+# envs/create_file.yaml
+name: create_file
+channels:
+  - defaults
+dependencies:
+  - python=3.8

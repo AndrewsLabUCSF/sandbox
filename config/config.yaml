@@ -1,0 +1,6 @@
+# config.yaml
+# snakemake -j 1 --profile sge --use-conda --keep-going --notemp -np
+
+output_file: "results/output.txt"
+final_output_file: "results/final_output.txt"
+memory: 100
