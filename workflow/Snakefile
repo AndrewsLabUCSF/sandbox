@@ -1,32 +1,40 @@
 # Read configuration file
 configfile: "config/config.yaml"
+SAMPLES = config["samples"]
 
 # Define the rule that determines the final targets of the workflow
 rule all:
     input:
-        config["final_output_file"]
+        'results/final_output.txt'
 
-# Rule to create a file
-rule create_file:
+rule quantify_genes:
+    input:
+        genome = 'resources/genome.fa',
+        r1 = 'resources/{sample}.R1.fastq.gz',
+        r2 = 'resources/{sample}.R2.fastq.gz'
     output:
-        config["output_file"]
-    conda: "envs/create_file.yaml"
+        'data/{sample}.txt'
     threads: 1
     resources:
-        mem_mb=config["memory"], 
-        walltime=1
+        mem_mb=1000, 
+        walltime='00:01:00'
     shell:
-        "echo 'This is a test file.' > {output}"
+        'echo {input.genome} {input.r1} {input.r2} > {output}'
 
-# Rule to append text to the created file
-rule append_text:
-    input: rules.create_file.output
+rule collate_outputs:
+    input:
+        expand('data/{sample}.txt', sample=SAMPLES)
     output:
-        config["final_output_file"]
-    conda: "envs/create_file.yaml"
+        'results/final_output.txt'
+    # conda: "envs/py38.yaml"
     threads: 1
     resources:
-        mem_mb=config["memory"],
-        walltime=1
-    shell:
-        "cat {input} > {output}; echo 'Appended text.' >> {output}"
+        mem_mb=1000, 
+        walltime='00:01:00'
+    run:
+        with open(output[0], 'w') as out:
+            for i in input:
+                sample = i.split('.')[0]
+                for line in open(i):
+                    out.write(sample + ' ' + line)
+

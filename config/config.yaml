@@ -1,6 +1,7 @@
 # config.yaml
-# snakemake -j 1 --profile sge --use-conda --keep-going --notemp -np
+# snakemake -j 1 -np
+# snakemake -j 1 --profile sge -np
+# snakemake -j 1 --profile sge --use-conda -np
+# snakemake -j 1 --cluster "qsub -cwd -pe smp {threads} -l mem_free={resources.mem_mb}M -l h_rt={resources.walltime}"
 
-output_file: "results/output.txt"
-final_output_file: "results/final_output.txt"
-memory: 100
+samples: ['Sample1', 'Sample2']
