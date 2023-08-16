@@ -1,0 +1,7 @@
+# envs/py39.yaml
+name: py39
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+

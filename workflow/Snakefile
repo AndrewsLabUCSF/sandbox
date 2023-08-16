@@ -14,27 +14,26 @@ rule quantify_genes:
         r2 = 'resources/{sample}.R2.fastq.gz'
     output:
         'data/{sample}.txt'
-    threads: 1
+    params: 
+        build = config["build"]
+    threads: 2
     resources:
-        mem_mb=1000, 
-        walltime='00:01:00'
+        mem_mb=2048, 
+        time_min='00:05:00', 
     shell:
-        'echo {input.genome} {input.r1} {input.r2} > {output}'
+        'echo {params.build} {input.genome} {input.r1} {input.r2} > {output}'
 
 rule collate_outputs:
     input:
         expand('data/{sample}.txt', sample=SAMPLES)
     output:
         'results/final_output.txt'
-    # conda: "envs/py38.yaml"
+    conda: "envs/py39.yaml"
     threads: 1
     resources:
-        mem_mb=1000, 
-        walltime='00:01:00'
-    run:
-        with open(output[0], 'w') as out:
-            for i in input:
-                sample = i.split('.')[0]
-                for line in open(i):
-                    out.write(sample + ' ' + line)
+        mem_mb=2048, 
+        time_min='00:05:00',
+    script: 
+        "scripts/collate_outputs.py"
+
 
